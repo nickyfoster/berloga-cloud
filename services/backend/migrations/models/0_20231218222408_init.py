@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS "servers" (
     "id" SERIAL NOT NULL PRIMARY KEY,
     "name" VARCHAR(225) NOT NULL,
     "type" VARCHAR(225) NOT NULL,
-    "ssh_pub_key" TEXT,
+    "ssh_key" TEXT,
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "creator_id" INT NOT NULL REFERENCES "users" ("id") ON DELETE CASCADE

@@ -33,6 +33,7 @@
       </svg>
     </div>
     {{ alert.message }}
+    <button @click="closeAlert" class="close-button">Close</button>
   </div>
 </template>
 
@@ -51,7 +52,11 @@ export default defineComponent({
       store.dispatch('clearAlert');
     });
 
-    return {};
+    const closeAlert = () => {
+      store.dispatch('clearAlert');
+    };
+
+    return { closeAlert };
   },
   computed: {
     ...mapGetters({ alert: 'stateAlert' }),
@@ -59,4 +64,11 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+<style>
+.close-button {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+</style>

@@ -10,7 +10,7 @@ from jose import JWTError, jwt
 from tortoise.exceptions import DoesNotExist
 
 from src.schemas.token import TokenData
-from src.schemas.users import UserOutSchema
+from src.schemas.users import UserPublicSchema, UserPublicSchema, UserPrivateSchema
 from src.database.models import Users
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -82,7 +82,7 @@ async def get_current_user(token: str = Depends(security)):
         raise credentials_exception
 
     try:
-        user = await UserOutSchema.from_queryset_single(
+        user = await UserPublicSchema.from_queryset_single(
             Users.get(username=token_data.username)
         )
     except DoesNotExist:

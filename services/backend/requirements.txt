@@ -8,3 +8,4 @@ tortoise-orm==0.19.2
 uvicorn==0.20.0
 python-dotenv==1.0.0
 python-multipart==0.0.5
+hcloud==1.33.0

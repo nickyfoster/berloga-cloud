@@ -19,23 +19,27 @@ const actions = {
     await dispatch('logIn', UserForm);
   },
   async logIn({ dispatch }, user) {
-    let response = await axios.post('login', user, {
-      validateStatus: () => true,
-    });
-    if (response) {
-      if (response.status === 200) {
-        await dispatch('viewMe');
+    try {
+      let response = await axios.post('login', user, {
+        validateStatus: () => true,
+      });
+      if (response) {
+        if (response.status === 200) {
+          await dispatch('viewMe');
+        } else {
+          dispatch('triggerAlert', {
+            message: "Invalid credentials",
+            type: 'error'
+          });
+        }
       } else {
         dispatch('triggerAlert', {
-          message: "Invalid credentials",
+          message: "Auth error",
           type: 'error'
         });
       }
-    } else {
-      dispatch('triggerAlert', {
-        message: "Auth error",
-        type: 'error'
-      });
+    } catch (error) {
+      console.error(error);
     }
   },
   async viewMe({ commit }) {

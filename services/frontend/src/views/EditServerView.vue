@@ -2,6 +2,7 @@
   <section>
     <h1>Edit server</h1>
     <hr /><br />
+    <p>TODO update same as DashboardView</p>
 
     <form @submit.prevent="submit">
       <div class="mb-3">
@@ -10,7 +11,7 @@
       </div>
       <div class="mb-3">
         <label for="type" class="form-label">Type:</label>
-        <textarea name="type" v-model="form.type" class="form-control"></textarea>
+        <input type="text" name="type" v-model="form.type" class="form-control" />
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>

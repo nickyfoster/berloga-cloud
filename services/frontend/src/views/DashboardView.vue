@@ -11,7 +11,15 @@
         </div>
         <div class="mb-3">
           <label for="type" class="form-label">Type:</label>
-          <textarea name="type" v-model="form.type" class="form-control"></textarea>
+          <select name="type" v-model="form.type" class="form-control">
+            <option v-for="type in types" :value="type" :key="type">{{ type }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="image" class="form-label">Image:</label>
+          <select name="image" v-model="form.image" class="form-control">
+            <option v-for="image in images" :value="image" :key="image">{{ image }}</option>
+          </select>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
@@ -54,9 +62,11 @@ export default defineComponent({
   data() {
     return {
       form: {
-        name: '',
-        type: '',
+        name: null,
+        type: null,
       },
+      types: ["cx11"],
+      images: ["ubuntu-22.04"],
     };
   },
   created: function () {

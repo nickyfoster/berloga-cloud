@@ -5,6 +5,7 @@
     <div v-if="user">
       <p><strong>Full Name:</strong> <span>{{ user.full_name }}</span></p>
       <p><strong>Username:</strong> <span>{{ user.username }}</span></p>
+      <p><strong>SSH Key:</strong> <span>{{ user.ssh_key }}</span></p>
       <p><strong>Role:</strong> <span>{{ user.role }}</span></p>
       <p><button @click="deleteAccount()" class="btn btn-primary">Delete Account</button></p>
     </div>

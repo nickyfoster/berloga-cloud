@@ -13,12 +13,16 @@ const getters = {
 const actions = {
   async createServer({ dispatch }, server) {
     const response = await axios.post('servers', server);
-    console.log(response);
     if (response) {
       if (response.status === 200) {
         dispatch('triggerAlert', {
           message: 'Server created successfully',
           type: 'success'
+        });
+      } else {
+        dispatch('triggerAlert', {
+          message: response.response.data.detail,
+          type: 'error'
         });
       }
     }

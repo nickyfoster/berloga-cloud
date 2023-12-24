@@ -6,16 +6,16 @@ from tortoise.exceptions import DoesNotExist
 
 import src.crud.servers as crud
 from src.auth.jwthandler import get_current_user
-from src.schemas.servers import ServerOutSchema, ServerInSchema, UpdateServer
+from src.schemas.servers import ServerPublicSchema, ServerUpdateSchema, ServerCreateSchema
 from src.schemas.token import Status
-from src.schemas.users import UserOutSchema
+from src.schemas.users import UserPublicSchema
 
 router = APIRouter()
 
 
 @router.get(
     "/servers",
-    response_model=List[ServerOutSchema],
+    response_model=List[ServerPublicSchema],
     dependencies=[Depends(get_current_user)],
 )
 async def get_servers():
@@ -24,10 +24,10 @@ async def get_servers():
 
 @router.get(
     "/server/{server_id}",
-    response_model=ServerOutSchema,
+    response_model=ServerPublicSchema,
     dependencies=[Depends(get_current_user)],
 )
-async def get_server(server_id: int) -> ServerOutSchema:
+async def get_server(server_id: int) -> ServerPublicSchema:
     try:
         return await crud.get_server(server_id)
     except DoesNotExist:
@@ -38,25 +38,25 @@ async def get_server(server_id: int) -> ServerOutSchema:
 
 
 @router.post(
-    "/servers", response_model=ServerOutSchema, dependencies=[Depends(get_current_user)]
+    "/servers", dependencies=[Depends(get_current_user)]
 )
 async def create_server(
-        server: ServerInSchema, current_user: UserOutSchema = Depends(get_current_user)
-) -> ServerOutSchema:
+        server: ServerCreateSchema, current_user: UserPublicSchema = Depends(get_current_user)
+) -> ServerPublicSchema:
     return await crud.create_server(server, current_user)
 
 
 @router.patch(
     "/server/{server_id}",
     dependencies=[Depends(get_current_user)],
-    response_model=ServerOutSchema,
+    response_model=ServerPublicSchema,
     responses={404: {"model": HTTPNotFoundError}},
 )
 async def update_server(
         server_id: int,
-        server: UpdateServer,
-        current_user: UserOutSchema = Depends(get_current_user),
-) -> ServerOutSchema:
+        server: ServerUpdateSchema,
+        current_user: UserPublicSchema = Depends(get_current_user),
+) -> ServerPublicSchema:
     return await crud.update_server(server_id, server, current_user)
 
 
@@ -67,6 +67,6 @@ async def update_server(
     dependencies=[Depends(get_current_user)],
 )
 async def delete_server(
-        server_id: int, current_user: UserOutSchema = Depends(get_current_user)
+        server_id: int, current_user: UserPublicSchema = Depends(get_current_user)
 ):
     return await crud.delete_server(server_id, current_user)

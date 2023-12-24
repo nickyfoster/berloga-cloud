@@ -14,13 +14,13 @@ from src.auth.jwthandler import (
 )
 from src.auth.users import validate_user
 from src.schemas.token import Status
-from src.schemas.users import UserInSchema, UserOutSchema
+from src.schemas.users import UserRegisterSchema, UserPublicSchema, UserPrivateSchema, UserUpdateSchema
 
 router = APIRouter()
 
 
-@router.post("/register", response_model=UserOutSchema)
-async def create_user(user: UserInSchema) -> UserOutSchema:
+@router.post("/register", response_model=UserPublicSchema)
+async def create_user(user: UserRegisterSchema) -> UserPublicSchema:
     return await crud.create_user(user)
 
 
@@ -56,9 +56,9 @@ async def login(user: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.get(
-    "/users/whoami", response_model=UserOutSchema, dependencies=[Depends(get_current_user)]
+    "/users/whoami", response_model=UserPublicSchema, dependencies=[Depends(get_current_user)]
 )
-async def read_users_me(current_user: UserOutSchema = Depends(get_current_user)):
+async def read_users_me(current_user: UserPublicSchema = Depends(get_current_user)):
     return current_user
 
 
@@ -69,6 +69,20 @@ async def read_users_me(current_user: UserOutSchema = Depends(get_current_user))
     dependencies=[Depends(get_current_user)],
 )
 async def delete_user(
-        user_id: int, current_user: UserOutSchema = Depends(get_current_user)
+        user_id: int, current_user: UserPrivateSchema = Depends(get_current_user)
 ) -> Status:
     return await crud.delete_user(user_id, current_user)
+
+
+@router.patch(
+    "/user/{user_id}",
+    response_model=UserPublicSchema,
+    responses={404: {"model": HTTPNotFoundError}},
+    dependencies=[Depends(get_current_user)],
+)
+async def update_user(
+        user_id: int,
+        user_update: UserUpdateSchema,
+        current_user: UserPublicSchema = Depends(get_current_user),
+) -> UserPublicSchema:
+    return await crud.update_user(user_id, user_update, current_user)
