@@ -6,6 +6,7 @@ import DashboardView from '@/views/DashboardView.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import ServerView from '@/views/ServerView.vue';
 import EditServerView from '@/views/EditServerView.vue';
+import EditProfileView from '@/views/EditProfileView.vue';
 import store from '@/store';
 
 
@@ -49,6 +50,13 @@ const routes = [
     path: '/editserver/:id',
     name: 'EditServer',
     component: EditServerView,
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/editprofile/:id',
+    name: 'EditUser',
+    component: EditProfileView,
     meta: { requiresAuth: true },
     props: true,
   },

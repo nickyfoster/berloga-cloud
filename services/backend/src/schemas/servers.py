@@ -30,3 +30,8 @@ ServerPrivateSchema = pydantic_model_creator(
 class ServerUpdateSchema(BaseModel):
     name: Optional[str]
     type: Optional[str]
+
+
+class ServerCreateResponseSchema(BaseModel):
+    id: str
+    status: str

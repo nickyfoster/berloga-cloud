@@ -6,7 +6,7 @@ from tortoise.exceptions import DoesNotExist
 
 import src.crud.servers as crud
 from src.auth.jwthandler import get_current_user
-from src.schemas.servers import ServerPublicSchema, ServerUpdateSchema, ServerCreateSchema
+from src.schemas.servers import ServerPublicSchema, ServerUpdateSchema, ServerCreateSchema, ServerCreateResponseSchema
 from src.schemas.token import Status
 from src.schemas.users import UserPublicSchema
 
@@ -38,11 +38,12 @@ async def get_server(server_id: int) -> ServerPublicSchema:
 
 
 @router.post(
-    "/servers", dependencies=[Depends(get_current_user)]
+    "/servers", dependencies=[Depends(get_current_user)],
+    response_model=ServerCreateResponseSchema,
 )
 async def create_server(
         server: ServerCreateSchema, current_user: UserPublicSchema = Depends(get_current_user)
-) -> ServerPublicSchema:
+) -> ServerCreateResponseSchema:
     return await crud.create_server(server, current_user)
 
 

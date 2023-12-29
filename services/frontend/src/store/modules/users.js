@@ -53,6 +53,10 @@ const actions = {
   async logOut({ commit }) {
     commit('logout', null);
   },
+  // eslint-disable-next-line no-empty-pattern
+  async updateUser({ }, user) {
+    await axios.patch(`user/${user.id}`, user.form);
+  }
 };
 
 const mutations = {

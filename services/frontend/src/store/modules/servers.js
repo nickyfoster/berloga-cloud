@@ -15,8 +15,9 @@ const actions = {
     const response = await axios.post('servers', server);
     if (response) {
       if (response.status === 200) {
+        console.log(response);
         dispatch('triggerAlert', {
-          message: 'Server created successfully',
+          message: 'Server created successfully! Current status: ' + response.data.status,
           type: 'success'
         });
       } else {
