@@ -1,5 +1,9 @@
 # Berloga Cloud
 
+Personal cloud control pane with a Vue frontend and a FastAPI backend.
+
+![Dashboard_screenshot](https://github.com/nickyfoster/berloga-cloud/blob/main/docs/dashboard_page_example.png?raw=true)
+
 ## Quickstart
 Get up and running with Berloga Cloud using Docker Compose. This guide assumes that you have Docker and Docker Compose installed on your system.
 

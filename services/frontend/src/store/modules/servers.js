@@ -13,8 +13,6 @@ const getters = {
 };
 
 const actions = {
-
-
   async createServer({ commit, dispatch }, server) {
     commit('setServerCreating');
     try {
@@ -35,8 +33,12 @@ const actions = {
     await dispatch('getServers');
   },
   async getServers({ commit }) {
-    let { data } = await axios.get('servers');
-    commit('setServers', data);
+    try {
+      let { data } = await axios.get('servers');
+      commit('setServers', data);
+    } catch (error) {
+      console.log(error);
+    }
   },
   async viewServer({ commit }, id) {
     let { data } = await axios.get(`server/${id}`);

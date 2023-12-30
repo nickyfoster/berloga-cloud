@@ -5,7 +5,7 @@ from tortoise.exceptions import DoesNotExist
 
 from src.database.models import Servers
 from src.providers.provider import get_cloud_provider
-from src.schemas.servers import ServerPublicSchema, ServerCreateResponseSchema
+from src.schemas.servers import ServerPublicSchema, ServerCreateResponseSchema, ServerUpdateSchema
 from src.schemas.token import Status
 
 cloud_provider = get_cloud_provider(token=os.environ.get("CLOUD_PROVIDER_TOKEN"))
@@ -16,6 +16,13 @@ async def get_servers():
 
 
 async def get_server(server_id) -> ServerPublicSchema:
+    server_data = cloud_provider.get_server(
+        await ServerPublicSchema.from_queryset_single(Servers.get(id=server_id))
+    )
+    await Servers.filter(id=server_id).update(
+        status=server_data.status,
+        public_ip=server_data.public_net.ipv4.ip
+    )
     return await ServerPublicSchema.from_queryset_single(Servers.get(id=server_id))
 
 
