@@ -2,30 +2,35 @@ import axios from 'axios';
 
 const state = {
   servers: [],
-  server: null
+  server: null,
+  isServerCreating: false,
 };
 
 const getters = {
   stateServers: state => state.servers,
   stateServer: state => state.server,
+  isServerCreating: state => state.isServerCreating
 };
 
 const actions = {
-  async createServer({ dispatch }, server) {
-    const response = await axios.post('servers', server);
-    if (response) {
-      if (response.status === 200) {
-        console.log(response);
-        dispatch('triggerAlert', {
-          message: 'Server created successfully! Current status: ' + response.data.status,
-          type: 'success'
-        });
-      } else {
-        dispatch('triggerAlert', {
-          message: response.response.data.detail,
-          type: 'error'
-        });
-      }
+
+
+  async createServer({ commit, dispatch }, server) {
+    commit('setServerCreating');
+    try {
+      const response = await axios.post('servers', server);
+      console.log(response);
+      dispatch('triggerAlert', {
+        message: 'Server created! Status: ' + response.data.status,
+        type: 'success'
+      });
+    } catch (error) {
+      dispatch('triggerAlert', {
+        message: 'Error creating server: ' + (error.response?.data?.detail || error.message),
+        type: 'error'
+      });
+    } finally {
+      commit('setServerNotCreating');
     }
     await dispatch('getServers');
   },
@@ -57,6 +62,12 @@ const mutations = {
   },
   setServer(state, server) {
     state.server = server;
+  },
+  setServerCreating(state) {
+    state.isServerCreating = true;
+  },
+  setServerNotCreating(state) {
+    state.isServerCreating = false;
   }
 };
 

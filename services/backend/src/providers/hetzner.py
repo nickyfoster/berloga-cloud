@@ -1,3 +1,5 @@
+import asyncio
+
 from hcloud import Client, APIException
 from hcloud.images import Image
 from hcloud.server_types import ServerType
@@ -13,10 +15,11 @@ class Hetzner:
         self.client = Client(token=token)
         pass
 
-    def create_server(self, server_obj: ServerPrivateSchema, user_obj: UserPublicSchema):
+    async def create_server(self, server_obj: ServerPrivateSchema, user_obj: UserPublicSchema):
         try:
-            ssh_key = self._get_ssh_key(user_obj)
-            response = self.client.servers.create(
+            ssh_key = await asyncio.to_thread(self._get_ssh_key, user_obj)
+            response = await asyncio.to_thread(
+                self.client.servers.create,
                 name=server_obj.name,
                 server_type=ServerType(name=server_obj.type),
                 image=Image(name=server_obj.image),

@@ -28,7 +28,9 @@ axios.interceptors.response.use(response => {
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         store.dispatch('logOut');
-        return router.push('/login');
+        router.push('/login');
+        // TODO: prompt user to log in again with popup
+        return Promise.reject('Unauthorized');
       } else if (error.response.status >= 500) {
         store.dispatch('triggerAlert', {
           message: "Server error",
@@ -37,7 +39,7 @@ axios.interceptors.response.use(response => {
       }
     }
   }
-  return error;
+  return Promise.reject(error);
 });
 
 app.use(router);

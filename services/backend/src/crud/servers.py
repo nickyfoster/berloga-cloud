@@ -24,7 +24,7 @@ async def create_server(server, current_user) -> ServerCreateResponseSchema:
     server_dict["creator_id"] = current_user.id
     server_dict["ssh_key"] = current_user.ssh_key
     try:
-        response = cloud_provider.create_server(server, current_user)
+        response = await cloud_provider.create_server(server, current_user)
     except Exception as e:
         raise HTTPException(
             status_code=500,

@@ -21,7 +21,16 @@
             <option v-for="image in images" :value="image" :key="image">{{ image }}</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <div v-if="!isServerCreating">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div v-else>
+          <button class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span class="visually-hidden">Submit</span>
+          </button>
+
+        </div>
       </form>
     </section>
 
@@ -63,7 +72,8 @@ export default defineComponent({
     return {
       form: {
         name: null,
-        type: null,
+        type: "cx11",
+        image: "ubuntu-22.04",
       },
       types: ["cx11"],
       images: ["ubuntu-22.04"],
@@ -73,7 +83,7 @@ export default defineComponent({
     return this.$store.dispatch('getServers');
   },
   computed: {
-    ...mapGetters({ servers: 'stateServers' }),
+    ...mapGetters({ servers: 'stateServers', isServerCreating: 'isServerCreating' }),
   },
   methods: {
     ...mapActions(['createServer']),
