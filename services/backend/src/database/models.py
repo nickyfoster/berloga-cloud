@@ -23,8 +23,4 @@ class Servers(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
     status = fields.CharField(max_length=20, null=True)
-
-    def __str__(self):
-        return f"{self.name}, {self.creator_id} on {self.created_at}"
-
-
+    root_password = fields.CharField(max_length=255, null=True)

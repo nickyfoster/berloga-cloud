@@ -3,18 +3,23 @@ import axios from 'axios';
 const state = {
   servers: [],
   server: null,
-  isServerCreating: false,
+  isServerUpdating: false,
+  serverTypes: [],
+  serverImages: [],
 };
 
 const getters = {
   stateServers: state => state.servers,
   stateServer: state => state.server,
-  isServerCreating: state => state.isServerCreating
+  isServerUpdating: state => state.isServerUpdating,
+  serverTypes: state => state.serverTypes,
+  serverImages: state => state.serverImages,
 };
 
 const actions = {
   async createServer({ commit, dispatch }, server) {
-    commit('setServerCreating');
+    commit('setServerUpdating', true);
+    console.log(111, server)
     try {
       const response = await axios.post('servers', server);
       console.log(response);
@@ -28,7 +33,7 @@ const actions = {
         type: 'error'
       });
     } finally {
-      commit('setServerNotCreating');
+      commit('setServerUpdating', false);
     }
     await dispatch('getServers');
   },
@@ -49,13 +54,41 @@ const actions = {
     await axios.patch(`server/${server.id}`, server.form);
   },
   // eslint-disable-next-line no-empty-pattern
-  async deleteServer({ }, id) {
+  async deleteServer({ commit }, id) {
+    commit('setServerUpdating', true);
     await axios.delete(`server/${id}`);
+    commit('setServerUpdating', false);
   },
   async logOut({ commit }) {
     commit('setServer', null);
     commit('setServers', []);
-  }
+  },
+  async fetchServerTypes({ commit }) {
+    try {
+      let response = await axios.get('server-types');
+      if (response.data && response.data.server_types) {
+        commit('setServerTypes', response.data.server_types);
+
+      } else {
+        throw new Error('Invalid server types format');
+      }
+    } catch (error) {
+      console.error('Error fetching server types:', error);
+    }
+  },
+  async fetchServerImages({ commit }) {
+    try {
+      let response = await axios.get('server-images');
+      if (response.data && response.data.server_images) {
+        commit('setServerImages', response.data.server_images);
+
+      } else {
+        throw new Error('Invalid server images format');
+      }
+    } catch (error) {
+      console.error('Error fetching server images:', error);
+    }
+  },
 };
 
 const mutations = {
@@ -65,12 +98,15 @@ const mutations = {
   setServer(state, server) {
     state.server = server;
   },
-  setServerCreating(state) {
-    state.isServerCreating = true;
+  setServerUpdating(state, isUpdating) {
+    state.isServerUpdating = isUpdating;
   },
-  setServerNotCreating(state) {
-    state.isServerCreating = false;
-  }
+  setServerTypes(state, types) {
+    state.serverTypes = types;
+  },
+  setServerImages(state, images) {
+    state.serverImages = images;
+  },
 };
 
 export default {

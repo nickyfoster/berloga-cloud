@@ -21,7 +21,7 @@
             <option v-for="image in images" :value="image" :key="image">{{ image }}</option>
           </select>
         </div>
-        <div v-if="!isServerCreating">
+        <div v-if="!isServerUpdating">
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
         <div v-else>
@@ -41,22 +41,26 @@
       <hr /><br />
 
       <div v-if="servers.length">
-        <div v-for="server in servers" :key="server.id" class="servers">
+        <div v-for="server in servers" :key="server.id" class="mb-3">
           <div class="card" style="width: 18rem;">
+            <div class="card-header">
+              <h5 class="card-title">{{ server.name }}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><strong>Type:</strong> {{ server.type }}</li>
+              <li class="list-group-item"><strong>Image:</strong> {{ server.image }}</li>
+            </ul>
             <div class="card-body">
-              <ul>
-                <li><strong>Name:</strong> {{ server.name }}</li>
-                <li><strong>Type:</strong> {{ server.type }}</li>
-                <li><router-link :to="{ name: 'Server', params: { id: server.id } }">View</router-link></li>
-              </ul>
+              <router-link :to="{ name: 'Server', params: { id: server.id } }" class="btn btn-primary">View
+                Server</router-link>
             </div>
           </div>
-          <br />
         </div>
       </div>
 
+
       <div v-else>
-        <p>Nothing to see. Check back later.</p>
+        <p>Nothing to see.</p>
       </div>
     </section>
   </div>
@@ -71,25 +75,43 @@ export default defineComponent({
   data() {
     return {
       form: {
-        name: null,
-        type: "cx11",
-        image: "ubuntu-22.04",
+        name: '',
+        type: null,
+        image: null,
       },
-      types: ["cx11"],
-      images: ["ubuntu-22.04"],
     };
   },
-  created: function () {
+  created: async function () {
+    await this.fetchServerTypes();
+    await this.fetchServerImages();
+    this.setDefaultValues();
     return this.$store.dispatch('getServers');
   },
   computed: {
-    ...mapGetters({ servers: 'stateServers', isServerCreating: 'isServerCreating' }),
+    ...mapGetters({
+      servers: 'stateServers',
+      isServerUpdating: 'isServerUpdating',
+      types: 'serverTypes',
+      images: 'serverImages',
+    }),
   },
   methods: {
-    ...mapActions(['createServer']),
+    ...mapActions([
+      'createServer',
+      'fetchServerTypes',
+      'fetchServerImages'
+    ]),
     async submit() {
       await this.createServer(this.form);
     },
+    setDefaultValues() {
+      if (this.types.length > 0) {
+        this.form.type = this.types[0];
+      }
+      if (this.images.length > 0) {
+        this.form.image = this.images[0];
+      }
+    }
   },
 });
 </script>

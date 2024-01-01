@@ -2,16 +2,19 @@
   <section>
     <h1>Edit server</h1>
     <hr /><br />
-    <p>TODO update same as DashboardView</p>
 
     <form @submit.prevent="submit">
       <div class="mb-3">
-        <label for="name" class="form-label">Name:</label>
-        <input type="text" name="name" v-model="form.name" class="form-control" />
+        <label for="type" class="form-label">Type:</label>
+        <select name="type" v-model="form.type" class="form-control">
+          <option v-for="type in types" :value="type" :key="type">{{ type }}</option>
+        </select>
       </div>
       <div class="mb-3">
-        <label for="type" class="form-label">Type:</label>
-        <input type="text" name="type" v-model="form.type" class="form-control" />
+        <label for="image" class="form-label">Image:</label>
+        <select name="image" v-model="form.image" class="form-control">
+          <option v-for="image in images" :value="image" :key="image">{{ image }}</option>
+        </select>
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -28,19 +31,30 @@ export default defineComponent({
   data() {
     return {
       form: {
-        name: '',
-        type: '',
+        type: null,
+        image: null,
       },
     };
   },
-  created: function () {
+  created: async function () {
+    await this.fetchServerTypes();
+    await this.fetchServerImages();
     this.GetServer();
   },
   computed: {
-    ...mapGetters({ server: 'stateServer' }),
+    ...mapGetters({
+      server: 'stateServer',
+      types: 'serverTypes',
+      images: 'serverImages',
+    }),
   },
   methods: {
-    ...mapActions(['updateServer', 'viewServer']),
+    ...mapActions([
+      'updateServer',
+      'viewServer',
+      'fetchServerTypes',
+      'fetchServerImages'
+    ]),
     async submit() {
       try {
         let server = {
@@ -56,13 +70,13 @@ export default defineComponent({
     async GetServer() {
       try {
         await this.viewServer(this.id);
-        this.form.name = this.server.name;
         this.form.type = this.server.type;
+        this.form.image = this.server.image;
       } catch (error) {
         console.error(error);
         this.$router.push('/dashboard');
       }
-    }
+    },
   },
 });
 </script>

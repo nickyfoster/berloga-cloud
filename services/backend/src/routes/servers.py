@@ -6,11 +6,32 @@ from tortoise.exceptions import DoesNotExist
 
 import src.crud.servers as crud
 from src.auth.jwthandler import get_current_user
-from src.schemas.servers import ServerPublicSchema, ServerUpdateSchema, ServerCreateSchema, ServerCreateResponseSchema
+from src.schemas.servers import ServerPublicSchema, ServerUpdateSchema, ServerCreateSchema, ServerCreateResponseSchema, \
+    ServerTypesSchema, ServerImagesSchema
 from src.schemas.token import Status
 from src.schemas.users import UserPublicSchema
 
 router = APIRouter()
+
+
+@router.get(
+    "/server-types",
+    response_model=ServerTypesSchema,
+    dependencies=[Depends(get_current_user)],
+)
+async def get_server_types():
+    server_types = ServerTypesSchema(server_types=["cx11", "cx21"])
+    return server_types
+
+
+@router.get(
+    "/server-images",
+    response_model=ServerImagesSchema,
+    dependencies=[Depends(get_current_user)],
+)
+async def get_server_types():
+    server_types = ServerImagesSchema(server_images=["ubuntu-22.04"])
+    return server_types
 
 
 @router.get(
@@ -36,6 +57,20 @@ async def get_server(server_id: int) -> ServerPublicSchema:
             detail="Server does not exist",
         )
 
+
+# @router.get(
+#     "/server/{server_id}",
+#     dependencies=[Depends(get_current_user)],
+# )
+# async def get_server_password(server_id: int):
+#     try:
+#         return await crud.get_server_password(server_id)
+#     except DoesNotExist:
+#         raise HTTPException(
+#             status_code=404,
+#             detail="Server does not exist",
+#         )
+#
 
 @router.post(
     "/servers", dependencies=[Depends(get_current_user)],

@@ -14,10 +14,19 @@
       </div>
     </div>
 
-    <div v-if="user.id === server.creator.id" class="mt-3">
-      <router-link :to="{ name: 'EditServer', params: { id: server.id } }" class="btn btn-primary">Edit</router-link>
-      <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
-        Delete
+    <div v-if="!isServerUpdating">
+      <div v-if="user.id === server.creator.id || user.role === 'admin'" class="mt-3">
+        <router-link :to="{ name: 'EditServer', params: { id: server.id } }" class="btn btn-primary">Edit</router-link>
+        <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal"
+          data-bs-target="#deleteConfirmationModal">
+          Delete
+        </button>
+      </div>
+    </div>
+    <div v-else>
+      <button class="btn btn-primary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span class="visually-hidden">Submit</span>
       </button>
     </div>
 
@@ -60,7 +69,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapGetters({ server: 'stateServer', user: 'stateUser' }),
+    ...mapGetters({ server: 'stateServer', user: 'stateUser', isServerUpdating: 'isServerUpdating' }),
   },
   methods: {
     ...mapActions(['viewServer', 'deleteServer']),

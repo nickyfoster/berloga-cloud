@@ -9,3 +9,4 @@ uvicorn==0.20.0
 python-dotenv==1.0.0
 python-multipart==0.0.5
 hcloud==1.33.0
+sshpubkeys==3.3.1

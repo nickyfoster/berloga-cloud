@@ -15,8 +15,19 @@
         <label for="ssh_key" class="form-label">SSH Key:</label>
         <input type="text" name="ssh_key" v-model="form.ssh_key" class="form-control" />
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <div v-if="!isUserUpdating">
+        <button type="submit" class="btn btn-outline-primary">Submit</button>
+      </div>
     </form>
+    <div v-if="!isUserUpdating">
+      <button type="back" class="btn btn-primary" @click="this.$router.push('/profile');">Back</button>
+    </div>
+    <div v-else>
+      <button class="btn btn-primary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span class="visually-hidden">Submit</span>
+      </button>
+    </div>
   </section>
 </template>
 
@@ -40,26 +51,23 @@ export default defineComponent({
     this.GetUser();
   },
   computed: {
-    ...mapGetters({ user: 'stateUser' }),
+    ...mapGetters({
+      user: 'stateUser',
+      isUserUpdating: 'isUserUpdating'
+    }),
   },
   methods: {
     ...mapActions(['updateUser', 'viewMe']),
     async submit() {
-      try {
-        let user = {
-          form: this.form,
-          id: this.id
-        };
-        await this.updateUser(user);
-        this.$router.push('/profile');
-      } catch (error) {
-        console.log(error);
-      }
+      let user = {
+        form: this.form,
+        id: this.id
+      };
+      await this.updateUser(user);
     },
     async GetUser() {
       try {
         await this.viewMe(); // TODO: change to viewUser in order to enable editing other users
-        console.log(this.id);
         this.form.full_name = this.user.full_name;
         this.form.ssh_key = this.user.ssh_key;
       } catch (error) {

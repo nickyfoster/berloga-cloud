@@ -1,13 +1,15 @@
 import axios from 'axios';
 
 const state = {
-  user: null
+  user: null,
+  isUserUpdating: false
 };
 
 const getters = {
   isAuthenticated: state => !!state.user,
   isAdmin: state => state.user && state.user.role === 'admin',
   stateUser: state => state.user,
+  isUserUpdating: state => state.isUserUpdating
 };
 
 const actions = {
@@ -58,8 +60,30 @@ const actions = {
     commit('logout', null);
   },
   // eslint-disable-next-line no-empty-pattern
-  async updateUser({ }, user) {
-    await axios.patch(`user/${user.id}`, user.form);
+  async updateUser({ dispatch, commit }, user) {
+    commit('setUserUpdating', true)
+    await axios.patch(`user/${user.id}`, user.form)
+      .then(function (response) {
+        console.log(response);
+        dispatch('triggerAlert', {
+          message: "Profile updated",
+          type: 'success'
+        });
+        commit('setUserUpdating', false)
+      })
+      .catch(function (error) {
+        if (error.response) {
+          dispatch('triggerAlert', {
+            message: error.response.data.detail,
+            type: 'error'
+          });
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
   }
 };
 
@@ -69,6 +93,9 @@ const mutations = {
   },
   logout(state, user) {
     state.user = user;
+  },
+  setUserUpdating(state, isUserUpdating) {
+    state.isUserUpdating = isUserUpdating;
   }
 };
 

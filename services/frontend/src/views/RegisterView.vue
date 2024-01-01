@@ -28,7 +28,7 @@ export default defineComponent({
     return {
       user: {
         username: '',
-        full_name: '',
+        full_name: null,
         password: '',
       },
     };

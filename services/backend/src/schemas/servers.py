@@ -20,6 +20,7 @@ ServerPublicSchema = pydantic_model_creator(
         "creator.role", "creator.full_name", "creator.ssh_key"
     )
 )
+
 ServerPrivateSchema = pydantic_model_creator(
     Servers,
     name="User",
@@ -37,3 +38,13 @@ class ServerUpdateSchema(BaseModel):
 class ServerCreateResponseSchema(BaseModel):
     id: str
     status: str
+
+
+class ServerTypesSchema(BaseModel):
+    server_types: list[str]
+
+
+class ServerImagesSchema(BaseModel):
+    server_images: list[str]
+
+# class ServerPassword

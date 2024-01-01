@@ -1,6 +1,7 @@
 from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
 from tortoise.exceptions import DoesNotExist
 
 from src.database.models import Users
@@ -30,10 +31,15 @@ async def validate_user(user: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect username or password",
         )
 
-    if not verify_password(user.password, db_user.password):
+    try:
+        verify_password(user.password, db_user.password)
+    except UnknownHashError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
 
     return db_user
+
+if __name__ == '__main__':
+    print(get_password_hash("admin"))

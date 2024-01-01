@@ -29,14 +29,10 @@ async def get_server(server_id) -> ServerPublicSchema:
 async def create_server(server, current_user) -> ServerCreateResponseSchema:
     server_dict = server.dict(exclude_unset=True)
     server_dict["creator_id"] = current_user.id
-    server_dict["ssh_key"] = current_user.ssh_key
-    try:
-        response = await cloud_provider.create_server(server, current_user)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e),
-        )
+    if current_user.ssh_key:
+        server_dict["ssh_key"] = current_user.ssh_key
+    response, root_password = await cloud_provider.create_server(server, current_user)
+    server_dict["root_password"] = root_password
     await Servers.create(**server_dict)
     return response
 
@@ -62,8 +58,7 @@ async def delete_server(server_id, current_user) -> Status:
 
     if db_server.creator.id == current_user.id or current_user.role == "admin":
         try:
-            response = cloud_provider.delete_server(db_server)
-            print(response.status)
+            cloud_provider.delete_server(db_server)
         except Exception as e:
             raise HTTPException(
                 status_code=500,

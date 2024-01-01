@@ -1,12 +1,16 @@
+import os
+
 from fastapi import HTTPException
 from passlib.context import CryptContext
 from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from src.database.models import Users
+from src.providers.provider import get_cloud_provider
 from src.schemas.token import Status
 from src.schemas.users import UserPublicSchema, UserPrivateSchema
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+cloud_provider = get_cloud_provider(token=os.environ.get("CLOUD_PROVIDER_TOKEN"))
 
 
 async def create_user(user) -> UserPublicSchema:
@@ -27,6 +31,8 @@ async def delete_user(user_id, current_user) -> Status:
         raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
     if db_user.id == current_user.id or current_user.role == "admin":
+        if current_user.ssh_key:
+            cloud_provider.delete_ssh_key(current_user.username)
         deleted_count = await Users.filter(id=user_id).delete()
         if not deleted_count:
             raise HTTPException(status_code=404, detail=f"User {user_id} not found")
@@ -42,7 +48,13 @@ async def update_user(user_id, user_update, current_user) -> UserPublicSchema:
         raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
     if user.id == current_user.id or current_user.role == "admin":
-        await Users.filter(id=user_id).update(**user_update.dict(exclude_none=True))
+        user_update_dict = user_update.dict(exclude_none=True)
+        if user_update_dict.get("password"):
+            user_update_dict["password"] = pwd_context.encrypt(user_update_dict["password"])
+        if user_update_dict.get("ssh_key"):
+            if user_update.ssh_key != current_user.ssh_key:
+                cloud_provider.create_ssh_key(username=current_user.username, ssh_key=user_update.ssh_key)
+        await Users.filter(id=user_id).update(**user_update_dict)
         return await UserPublicSchema.from_queryset_single(Users.get(id=user_id))
 
     raise HTTPException(status_code=403, detail=f"Not authorized to update")
